@@ -48,6 +48,7 @@ InvationWatch.Minimap = {
 				end
 				tt:AddLine(line)
 				tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Click|r to toggle InvationWatch on/off"])
+				tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Type|r /iw to report who is not Major"])
 				--tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Right-click|r to open the options"])
 			end,
 		}
