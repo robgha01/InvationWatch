@@ -2,7 +2,7 @@ InvationWatch = LibStub("AceAddon-3.0"):NewAddon("InvationWatch", "AceConsole-3.
 local L = LibStub("AceLocale-3.0"):GetLocale("InvationWatch", false)
 local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
 local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
-InvationWatch._debug = true
+InvationWatch._debug = false
 InvationWatch.Ranks = {
 	[0] = "Private",	
 	[1] = "Lieutenant",
@@ -198,6 +198,8 @@ end
 local function ChatCmd(input)
 	if not input or input:trim() == "" then
 		InvationWatch:WhoNotMajor()
+	elseif input:trim() == "debug" then
+		InvationWatch._debug = not InvationWatch._debug
 	end
 end
 
