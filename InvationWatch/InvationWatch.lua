@@ -182,9 +182,9 @@ function InvationWatch:WhoNotMajor()
 
 	whoMsg = whoMsg:sub(1, #whoMsg - 2)
 	if whoMsg ~= "" then
-		whoMsg = format("The following players is not Major %s", whoMsg)
+		whoMsg = format(L["The following players are not Major %s"], whoMsg)
 	else
-		whoMsg = "Everyone is major"
+		whoMsg = L["Everyone is major"]
 	end
 
 	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
