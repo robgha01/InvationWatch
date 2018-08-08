@@ -1,10 +1,57 @@
-InvationWatch = LibStub("AceAddon-3.0"):NewAddon("InvationWatch", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceTimer-3.0", "AceSerializer-3.0", "AceHook-3.0");
+InvationWatch = LibStub("AceAddon-3.0"):NewAddon("InvationWatch", "AceConsole-3.0", "AceEvent-3.0", "AceComm-3.0", "AceTimer-3.0", "AceSerializer-3.0", "AceHook-3.0")
+local L = LibStub("AceLocale-3.0"):GetLocale("InvationWatch", false)
+local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
+local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
 InvationWatch._debug = true
 InvationWatch.Ranks = {
 	[0] = "Private",	
 	[1] = "Lieutenant",
 	[2] = "Captain",
 	[3] = "Major",
+}
+InvationWatch.Colors = {	
+	InvationWatch	= "|cff33ff99",
+	
+	-- minimap button ON/OFF colors
+	Minimap = {
+		ON			= "|cff00ff00", -- green
+		OFF			= "|cffff0000", -- red
+		Click		= "|cffffff00", -- highlights text around "Click" and "Right-Click" in the tooltip
+	},
+}
+-- define which icons we'll use
+InvationWatch.iconpaths = {
+	ON = "Interface\\Icons\\Ability_Warrior_BattleShout", --recognizable i guess
+	OFF = "Interface\\Icons\\Ability_Rogue_Disguise", --this is OK for off
+}
+-- LDB launcher
+InvationWatch.Minimap = {
+	LDBObject = LDB:NewDataObject(
+		"InvationWatch",
+		{
+			type = "launcher",
+				
+			icon = InvationWatch.iconpaths.ON,
+			text = "InvationWatch",
+				
+			OnClick = function(clickedframe, button)
+				InvationWatchSavedData.RankWatchEnabled = not InvationWatchSavedData.RankWatchEnabled
+				InvationWatch:MinimapButton_Refresh()
+			end,
+				
+			OnTooltipShow = function(tt)
+				local line = "InvationWatch"
+				if InvationWatchSavedData.RankWatchEnabled then
+					line = line..tostring(InvationWatch.Colors.Minimap.ON)..L[" is ON"]
+				else
+					line = line..tostring(InvationWatch.Colors.Minimap.OFF)..L[" is OFF"]
+				end
+				tt:AddLine(line)
+				tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Click|r to toggle InvationWatch on/off"])
+				--tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Right-click|r to open the options"])
+			end,
+		}
+	)
 }
 
 function InvationWatch:Debug(msg, ...)
@@ -20,6 +67,7 @@ end
 function InvationWatch:OnInitialize()
 	-- Called when the addon is loaded
 	InvationWatch:RegisterChatCmd()
+	InvationWatch:RegisterEvent("PLAYER_ENTERING_WORLD")
 end
 
 function InvationWatch:OnEnable()
@@ -30,8 +78,8 @@ function InvationWatch:OnDisable()
 	-- Called when the addon is disabled
 end
 
-local function GetGroupInvationRanks()
-	InvationWatch:Debug("GetGroupInvationRanks")
+local function ScanInvationRanks()
+	InvationWatch:Debug("ScanInvationRanks")
 	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
 	local who = {}
 	local n = nil
@@ -40,8 +88,8 @@ local function GetGroupInvationRanks()
 	local buffName = ""
 	local unitName = UnitName("player")
 
-	-- Include self
-	InvationWatch:Debug("Checking self:")
+	-- Include InvationWatch
+	InvationWatch:Debug("Checking InvationWatch:")
 	while true do
 		buffName = UnitBuff("player", buffIndex)
 		InvationWatch:Debug("buffIndex "..buffIndex)
@@ -113,12 +161,12 @@ local function GetGroupInvationRanks()
 		end
 	end
 
-	InvationWatch:Debug("GetGroupInvationRanks:Returning", who)
+	InvationWatch:Debug("ScanInvationRanks:Returning", who)
 	return who
 end
 
 function InvationWatch:WhoNotMajor()
-	local playerRanks = GetGroupInvationRanks()
+	local playerRanks = ScanInvationRanks()
 	if playerRanks == nil then
 		return
 	end
@@ -133,14 +181,16 @@ function InvationWatch:WhoNotMajor()
 
 	whoMsg = whoMsg:sub(1, #whoMsg - 2)
 	if whoMsg ~= "" then
-		local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
-		if numRaid > 1 then
-			whoMsg = format("The following raid members is not Major %s", whoMsg)
-			SendChatMessage(whoMsg, "RAID")
-		elseif numParty > 0 then
-			whoMsg = format("The following party members is not Major %s", whoMsg)
-			SendChatMessage(whoMsg, "PARTY")
-		end
+		whoMsg = format("The following players is not Major %s", whoMsg)
+	else
+		whoMsg = "Everyone is major"
+	end
+
+	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
+	if numRaid > 1 then
+		SendChatMessage(whoMsg, "RAID")
+	elseif numParty > 0 then
+		SendChatMessage(whoMsg, "PARTY")
 	end
 end
 
@@ -152,4 +202,52 @@ end
 
 function InvationWatch:RegisterChatCmd()
 	InvationWatch:RegisterChatCommand("iw", ChatCmd)
+end
+
+local whoUnitRank = {}
+function InvationWatch:UNIT_AURA(_, unitID)
+	if InvationWatchSavedData.RankWatchEnabled == false then return end
+	local foundRank = false
+	local unitName = UnitName(unitID)
+	for i = 1, 40 do
+		local ua = {UnitAura(unitID, i)}
+		local name,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
+		if not spellId then break end
+		for index, rank in ipairs(InvationWatch.Ranks) do
+			local isRank = rank == name
+			if isRank then
+				InvationWatch:Debug("UNIT_AURA " .. rank .. " " .. tostring(isRank))
+				foundRank = true
+				if whoUnitRank[unitName] ~= nil and index == 3 then
+					local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
+					local msg = format("%s is now Major", unitName)
+					if numRaid > 1 then
+						SendChatMessage(msg, "RAID")
+					elseif numParty > 0 then
+						SendChatMessage(msg, "PARTY")
+					end
+				end
+				whoUnitRank[unitName] = index
+			end
+		end
+	end
+	if foundRank == false and whoUnitRank[unitName] ~= nil then
+		whoUnitRank[unitName] = nil
+	end
+end
+
+function InvationWatch:PLAYER_ENTERING_WORLD()
+	InvationWatch:RegisterEvent("UNIT_AURA")
+	InvationWatch:MinimapButton_Refresh()
+end
+
+function InvationWatch:MinimapButton_Refresh()
+	-- make sure the correct icon is selected
+	-- NOTE: do this even if 'ShowMinimapButton' option is disabled
+	--		to support TitanPanel or other LDB frames
+	if InvationWatchSavedData.RankWatchEnabled then
+		InvationWatch.Minimap.LDBObject.icon = SpeakinSpell.iconpaths.ON
+	else
+		InvationWatch.Minimap.LDBObject.icon = SpeakinSpell.iconpaths.OFF
+	end
 end

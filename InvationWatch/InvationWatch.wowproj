@@ -11,6 +11,9 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="Config.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="InvationWatch.toc">
       <SubType>TableOfContents</SubType>
     </Content>
@@ -18,6 +21,15 @@
       <SubType>Code</SubType>
     </Content>
     <Content Include="embeds.xml">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Locales\Locale-enUS.lua">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
@@ -224,7 +236,10 @@
     <Folder Include="Libs\AceTab-3.0\" />
     <Folder Include="Libs\AceTimer-3.0\" />
     <Folder Include="Libs\CallbackHandler-1.0\" />
+    <Folder Include="Libs\LibDataBroker-1.1\" />
+    <Folder Include="Libs\LibDBIcon-1.0\" />
     <Folder Include="Libs\LibStub\" />
+    <Folder Include="Locales" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--
