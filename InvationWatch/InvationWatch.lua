@@ -91,7 +91,7 @@ function InvationWatch:ScanInvationRanks()
 	-- Start check player
 	InvationWatch:Debug("Checking InvationWatch:")
 	for b = 1, 40 do
-		local ua = {UnitAura(unitID, b)}
+		local ua = {UnitAura("player", b)}
 		local buffName,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
 		if not spellId then break end
 		
@@ -129,8 +129,8 @@ function InvationWatch:ScanInvationRanks()
 
 	for i = 1, n do
 		buffName = "";
-		local gIndex = g..i
-		unitName = UnitName(gIndex)
+		local unitID = g..i
+		unitName = UnitName(unitID)
 		who[unitName] = -1
 		InvationWatch:Debug("Checking "..unitName..":")
 
