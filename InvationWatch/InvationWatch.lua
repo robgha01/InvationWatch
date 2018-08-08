@@ -117,7 +117,7 @@ local function GetGroupInvationRanks()
 	return who
 end
 
-local function WhoNotMajor()
+function InvationWatch:WhoNotMajor()
 	local playerRanks = GetGroupInvationRanks()
 	if playerRanks == nil then
 		return
@@ -133,13 +133,20 @@ local function WhoNotMajor()
 
 	whoMsg = whoMsg:sub(1, #whoMsg - 2)
 	if whoMsg ~= "" then
-		print(whoMsg)
+		local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
+		if numRaid > 1 then
+			whoMsg = format("The following raid members is not Major %s", whoMsg)
+			SendChatMessage(whoMsg, "RAID")
+		elseif numParty > 0 then
+			whoMsg = format("The following party members is not Major %s", whoMsg)
+			SendChatMessage(whoMsg, "PARTY")
+		end
 	end
 end
 
 local function ChatCmd(input)
 	if not input or input:trim() == "" then
-		WhoNotMajor()
+		InvationWatch:WhoNotMajor()
 	end
 end
 
