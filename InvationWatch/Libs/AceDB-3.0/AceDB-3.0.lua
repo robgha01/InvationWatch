@@ -352,7 +352,7 @@ local function logoutHandler(frame, event)
 		for db in pairs(AceDB.db_registry) do
 			db.callbacks:Fire("OnDatabaseShutdown", db)
 			db:RegisterDefaults(nil)
-
+			
 			-- cleanup sections that are empty without defaults
 			local sv = rawget(db, "sv")
 			for section in pairs(db.keys) do

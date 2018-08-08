@@ -2,7 +2,7 @@
 TreeGroup Container
 Container that uses a tree control to switch between groups.
 -------------------------------------------------------------------------------]]
-local Type, Version = "TreeGroup", 33
+local Type, Version = "TreeGroup", 30
 local AceGUI = LibStub and LibStub("AceGUI-3.0", true)
 if not AceGUI or (AceGUI:GetWidgetVersion(Type) or 0) >= Version then return end
 
@@ -34,7 +34,7 @@ do
 	function del(t)
 		for k in pairs(t) do
 			t[k] = nil
-		end
+		end	
 		pool[t] = true
 	end
 end
@@ -65,7 +65,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 	local value = treeline.value
 	local uniquevalue = treeline.uniquevalue
 	local disabled = treeline.disabled
-
+	
 	button.treeline = treeline
 	button.value = value
 	button.uniquevalue = uniquevalue
@@ -88,7 +88,7 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button:SetHighlightFontObject("GameFontHighlightSmall")
 		button.text:SetPoint("LEFT", (icon and 16 or 0) + 8 * level, 2)
 	end
-
+	
 	if disabled then
 		button:EnableMouse(false)
 		button.text:SetText("|cff808080"..text..FONT_COLOR_CODE_CLOSE)
@@ -96,20 +96,20 @@ local function UpdateButton(button, treeline, selected, canExpand, isExpanded)
 		button.text:SetText(text)
 		button:EnableMouse(true)
 	end
-
+	
 	if icon then
 		button.icon:SetTexture(icon)
 		button.icon:SetPoint("LEFT", 8 * level, (level == 1) and 0 or 1)
 	else
 		button.icon:SetTexture(nil)
 	end
-
+	
 	if iconCoords then
 		button.icon:SetTexCoord(unpack(iconCoords))
 	else
 		button.icon:SetTexCoord(0, 1, 0, 1)
 	end
-
+	
 	if canExpand then
 		if not isExpanded then
 			toggle:SetNormalTexture("Interface\\Buttons\\UI-PlusButton-UP")
@@ -277,10 +277,10 @@ local function Dragger_OnMouseUp(frame)
 	treeframe:SetHeight(0)
 	treeframe:SetPoint("TOPLEFT", frame, "TOPLEFT",0,0)
 	treeframe:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT",0,0)
-
+	
 	local status = self.status or self.localstatus
 	status.treewidth = treeframe:GetWidth()
-
+	
 	treeframe.obj:Fire("OnTreeResize",treeframe:GetWidth())
 	-- recalculate the content width
 	treeframe.obj:OnWidthSet(status.fullwidth)
@@ -350,7 +350,7 @@ local methods = {
 		if not status.treewidth then
 			status.treewidth = DEFAULT_TREE_WIDTH
 		end
-		if status.treesizable == nil then
+		if not status.treesizable then
 			status.treesizable = DEFAULT_TREE_SIZABLE
 		end
 		self:SetTreeWidth(status.treewidth,status.treesizable)
@@ -360,8 +360,8 @@ local methods = {
 	--sets the tree to be displayed
 	["SetTree"] = function(self, tree, filter)
 		self.filter = filter
-		if tree then
-			assert(type(tree) == "table")
+		if tree then 
+			assert(type(tree) == "table") 
 		end
 		self.tree = tree
 		self:RefreshTree()
@@ -370,7 +370,7 @@ local methods = {
 	["BuildLevel"] = function(self, tree, level, parent)
 		local groups = (self.status or self.localstatus).groups
 		local hasChildren = self.hasChildren
-
+		
 		for i, v in ipairs(tree) do
 			if v.children then
 				if not self.filter or ShouldDisplayLevel(v.children) then
@@ -386,7 +386,7 @@ local methods = {
 	end,
 
 	["RefreshTree"] = function(self)
-		local buttons = self.buttons
+		local buttons = self.buttons 
 		local lines = self.lines
 
 		for i, v in ipairs(buttons) do
@@ -413,7 +413,6 @@ local methods = {
 		local numlines = #lines
 
 		local maxlines = (floor(((self.treeframe:GetHeight()or 0) - 20 ) / 18))
-		if maxlines <= 0 then return end
 
 		local first, last
 
@@ -430,8 +429,6 @@ local methods = {
 			--check if we are scrolled down too far
 			if numlines - status.scrollvalue < maxlines then
 				status.scrollvalue = numlines - maxlines
-			end
-			if self.scrollbar:GetValue() ~= status.scrollvalue then
 				self.scrollbar:SetValue(status.scrollvalue)
 			end
 			self.noupdate = nil
@@ -449,13 +446,13 @@ local methods = {
 				button:SetParent(treeframe)
 				button:SetFrameLevel(treeframe:GetFrameLevel()+1)
 				button:ClearAllPoints()
-				if buttonnum == 1 then
+				if i == 1 then
 					if self.showscroll then
-						button:SetPoint("TOPRIGHT", -22, -10)
-						button:SetPoint("TOPLEFT", 0, -10)
+						button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",-22,-10)
+						button:SetPoint("TOPLEFT", self.treeframe, "TOPLEFT", 0, -10)
 					else
-						button:SetPoint("TOPRIGHT", 0, -10)
-						button:SetPoint("TOPLEFT", 0, -10)
+						button:SetPoint("TOPRIGHT", self.treeframe,"TOPRIGHT",0,-10)
+						button:SetPoint("TOPLEFT", self.treeframe, "TOPLEFT", 0, -10)
 					end
 				else
 					button:SetPoint("TOPRIGHT", buttons[buttonnum-1], "BOTTOMRIGHT",0,0)
@@ -468,7 +465,7 @@ local methods = {
 			buttonnum = buttonnum + 1
 		end
 	end,
-
+	
 	["SetSelected"] = function(self, value)
 		local status = self.status or self.localstatus
 		if status.selected ~= value then
@@ -517,16 +514,16 @@ local methods = {
 		local treeframe = self.treeframe
 		local status = self.status or self.localstatus
 		status.fullwidth = width
-
+		
 		local contentwidth = width - status.treewidth - 20
 		if contentwidth < 0 then
 			contentwidth = 0
 		end
 		content:SetWidth(contentwidth)
 		content.width = contentwidth
-
+		
 		local maxtreewidth = math_min(400, width - 50)
-
+		
 		if maxtreewidth > 100 and status.treewidth > maxtreewidth then
 			self:SetTreeWidth(maxtreewidth, status.treesizable)
 		end
@@ -552,25 +549,20 @@ local methods = {
 				treewidth = DEFAULT_TREE_WIDTH
 			else
 				resizable = false
-				treewidth = DEFAULT_TREE_WIDTH
+				treewidth = DEFAULT_TREE_WIDTH 
 			end
 		end
 		self.treeframe:SetWidth(treewidth)
 		self.dragger:EnableMouse(resizable)
-
+		
 		local status = self.status or self.localstatus
 		status.treewidth = treewidth
 		status.treesizable = resizable
-
+		
 		-- recalculate the content width
 		if status.fullwidth then
 			self:OnWidthSet(status.fullwidth)
 		end
-	end,
-
-	["GetTreeWidth"] = function(self)
-		local status = self.status or self.localstatus
-		return status.treewidth or DEFAULT_TREE_WIDTH
 	end,
 
 	["LayoutFinished"] = function(self, width, height)
