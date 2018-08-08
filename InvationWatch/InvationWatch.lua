@@ -89,7 +89,7 @@ local function ScanInvationRanks()
 	local buffName = ""
 	local unitName = UnitName("player")
 
-	-- Include InvationWatch
+	-- Include Self
 	InvationWatch:Debug("Checking InvationWatch:")
 	while true do
 		buffName = UnitBuff("player", buffIndex)
@@ -111,6 +111,11 @@ local function ScanInvationRanks()
 		end
 
 		buffIndex = buffIndex + 1;
+	end
+
+	if who[unitName] == nil then
+		InvationWatch:Debug("No rank found for "..unitName)
+		who[unitName] = -1
 	end
 
 	if numRaid > 1 then
