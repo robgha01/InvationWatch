@@ -185,11 +185,9 @@ function InvationWatch:WhoNotMajor()
 
 	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
 	if numRaid > 1 then
-		--SendChatMessage(whoMsg, "RAID")
-		print(whoMsg)
+		SendChatMessage(whoMsg, "RAID")		
 	elseif numParty > 0 then
-		--SendChatMessage(whoMsg, "PARTY")
-		print(whoMsg)
+		SendChatMessage(whoMsg, "PARTY")		
 	end
 end
 
