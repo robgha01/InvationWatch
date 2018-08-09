@@ -2,13 +2,14 @@ InvationWatch = LibStub("AceAddon-3.0"):NewAddon("InvationWatch", "AceConsole-3.
 local L = LibStub("AceLocale-3.0"):GetLocale("InvationWatch", false)
 local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
 local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
-InvationWatch._debug = false
+InvationWatch._debug = true
 InvationWatch.Ranks = {
 	[0] = "Private",	
 	[1] = "Lieutenant",
 	[2] = "Captain",
 	[3] = "Major",
 }
+InvationWatch.Who = {}
 InvationWatch.Colors = {	
 	InvationWatch	= "|cff33ff99",
 	
@@ -80,9 +81,8 @@ function InvationWatch:OnDisable()
 end
 
 function InvationWatch:ScanInvationRanks()
-	InvationWatch:Debug("ScanInvationRanks")
+	--InvationWatch:Debug("ScanInvationRanks")
 	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
-	local who = {}
 	local n = nil
 	local g = nil
 	local buffName = ""
@@ -95,22 +95,22 @@ function InvationWatch:ScanInvationRanks()
 		local buffName,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
 		if not spellId then break end
 		
-		InvationWatch:Debug("buffName "..buffName)	
-		InvationWatch:Debug("Checking ranks")
+		--InvationWatch:Debug("buffName "..buffName)	
+		--InvationWatch:Debug("Checking ranks")
 		for index, rank in ipairs(InvationWatch.Ranks) do
 			local isRank = rank == buffName
-			InvationWatch:Debug("Is " .. rank .. " " .. tostring(isRank))
+			--InvationWatch:Debug("Is " .. rank .. " " .. tostring(isRank))
 			if isRank then
-				who[unitName] = index
-				InvationWatch:Debug("adding "..unitName.." to list", who)
+				InvationWatch.Who[unitName] = index
+				InvationWatch:Debug("adding "..unitName.." to list", InvationWatch.Who)
 				break
 			end
 		end
 	end
 
-	if who[unitName] == nil then
+	if InvationWatch.Who[unitName] == nil then
 		InvationWatch:Debug("No rank found for "..unitName)
-		who[unitName] = -1
+		InvationWatch.Who[unitName] = nil
 	end
 	-- End check player
 
@@ -124,70 +124,72 @@ function InvationWatch:ScanInvationRanks()
 		return nil
 	end
 	
-	InvationWatch:Debug("Group "..g)
-	InvationWatch:Debug("Num players "..n)
-
+	--InvationWatch:Debug("Group "..g)
+	--InvationWatch:Debug("Num players "..n)
 	for i = 1, n do
 		buffName = "";
 		local unitID = g..i
-		unitName = UnitName(unitID)
-		who[unitName] = -1
-		InvationWatch:Debug("Checking "..unitName..":")
 
-
-		for b = 1, 40 do
-			local ua = {UnitAura(unitID, b)}
-			local buffName,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
-			if not spellId then break end		
+		if UnitIsConnected(unitID) then
+			unitName = UnitName(unitID)
+			--InvationWatch:Debug("Checking "..unitName..":")
+			for b = 1, 40 do
+				local ua = {UnitAura(unitID, b)}
+				local buffName,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
+				if not spellId then break end		
 						
-			InvationWatch:Debug("buffName "..buffName)
-			InvationWatch:Debug("Checking ranks")
-			for index, rank in ipairs(InvationWatch.Ranks) do
-				local isRank = rank == buffName
-				InvationWatch:Debug("Is " .. rank .. " " .. tostring(isRank))
-				if isRank then
-					who[unitName] = index
-					InvationWatch:Debug("adding "..unitName.." to list", who)
-					break
+				--InvationWatch:Debug("buffName "..buffName)
+				--InvationWatch:Debug("Checking ranks")
+				for index, rank in ipairs(InvationWatch.Ranks) do
+					local isRank = rank == buffName
+					--InvationWatch:Debug("Is " .. rank .. " " .. tostring(isRank), buffName)
+					if isRank then
+						InvationWatch.Who[unitName] = index
+						InvationWatch:Debug("adding "..unitName.." to list", who)
+						break
+					end
 				end
 			end
-		end
 
-		if who[unitName] == -1 then
-			InvationWatch:Debug("No rank found for "..unitName)			
+			if InvationWatch.Who[unitName] == nil then
+				--InvationWatch:Debug("No rank found for "..unitName)
+				InvationWatch.Who[unitName] = -1		
+			end
 		end
 	end
-
-	InvationWatch:Debug("ScanInvationRanks:Returning", who)
-	return who
 end
 
 function InvationWatch:WhoNotMajor()
-	local playerRanks = InvationWatch:ScanInvationRanks()
-	if playerRanks == nil then
-		return
-	end
-	
+	InvationWatch:ScanInvationRanks()
+	if InvationWatch.Who == nil then return end	
 	local whoMsg = ""
-	for name, rank in pairs(playerRanks) do
-		InvationWatch:Debug("Has major ?", rank == InvationWatch.Ranks[3])
+	for name, rank in pairs(InvationWatch.Who) do
+		--InvationWatch:Debug("Has major ?", rank == InvationWatch.Ranks[3])
 		if rank ~= InvationWatch.Ranks[3] then
-			whoMsg = whoMsg .. name .. ", "
+			local msgWithRank = "%s (%s), %s"
+			local msgNoRank = "%s, %s"
+			if rank == -1 then
+				whoMsg = format(msgNoRank, name, whoMsg)
+			else
+				whoMsg = format(msgNoRank, name, InvationWatch.Ranks[rank], whoMsg)				
+			end			
 		end
 	end
 
 	whoMsg = whoMsg:sub(1, #whoMsg - 2)
 	if whoMsg ~= "" then
-		whoMsg = format(L["The following players are not Major %s"], whoMsg)
+		whoMsg = format(L["Not Major: %s"], whoMsg)
 	else
 		whoMsg = L["Everyone is major"]
 	end
 
 	local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
 	if numRaid > 1 then
-		SendChatMessage(whoMsg, "RAID")
+		--SendChatMessage(whoMsg, "RAID")
+		print(whoMsg)
 	elseif numParty > 0 then
-		SendChatMessage(whoMsg, "PARTY")
+		--SendChatMessage(whoMsg, "PARTY")
+		print(whoMsg)
 	end
 end
 
@@ -206,11 +208,10 @@ function InvationWatch:RegisterChatCmd()
 	InvationWatch:RegisterChatCommand("iw", ChatCmd)
 end
 
-local whoUnitRank = {}
+--local whoUnitRank = {}
 function InvationWatch:UNIT_AURA(_, unitID)
 	if InvationWatchSavedData.RankWatchEnabled == false then return end
-	if whoUnitRank[unitName] ~= nil and whoUnitRank[unitName] == 3 then return end
-
+	
 	local foundRank = false
 	local unitName = UnitName(unitID)
 	for i = 1, 40 do
@@ -220,9 +221,9 @@ function InvationWatch:UNIT_AURA(_, unitID)
 		for index, rank in ipairs(InvationWatch.Ranks) do
 			local isRank = rank == name
 			if isRank then
-				InvationWatch:Debug("UNIT_AURA " .. rank .. " " .. tostring(isRank))
+				--InvationWatch:Debug("UNIT_AURA " .. rank .. " " .. tostring(isRank))
 				foundRank = true
-				if whoUnitRank[unitName] ~= nil and whoUnitRank[unitName] == 2 and index == 3 then
+				if InvationWatch.Who[unitName] ~= nil and InvationWatch.Who[unitName] == 2 and index == 3 then
 					local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
 					local msg = format("%s is now Major", unitName)
 					if numRaid > 1 then
@@ -231,12 +232,12 @@ function InvationWatch:UNIT_AURA(_, unitID)
 						SendChatMessage(msg, "PARTY")
 					end
 				end
-				whoUnitRank[unitName] = index
+				InvationWatch.Who[unitName] = index
 			end
 		end
 	end
-	if foundRank == false and whoUnitRank[unitName] ~= nil then
-		whoUnitRank[unitName] = nil
+	if foundRank == false and InvationWatch.Who[unitName] ~= nil then
+		InvationWatch.Who[unitName] = -1
 	end
 end
 
