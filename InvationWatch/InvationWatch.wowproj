@@ -11,6 +11,9 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="AelixiaInvationCode.lua">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="Config.lua">
       <SubType>Code</SubType>
     </Content>

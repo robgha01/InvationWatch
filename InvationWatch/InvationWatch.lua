@@ -58,7 +58,7 @@ InvationWatch.Minimap = {
 
 function InvationWatch:Debug(msg, ...)
 	if InvationWatch._debug then
-		msg = "[InvationWatch] "..msg
+		msg = "[IW] "..msg
 		if ViragDevTool_AddData then
 			ViragDevTool_AddData({...}, msg)
 		else
@@ -93,18 +93,11 @@ end
 
 function InvationWatch:GetUnitInvationRank(unitID)
 	if unitID == nil or UnitIsPlayer(unitID) == false then return end
-	local unitName = UnitName(unitID)
-	
-	for b = 1, 40 do
-		local ua = {UnitAura(unitID, b)}
-		local name,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
-		if not spellId then break end
-		for index, rank in ipairs(InvationWatch.Ranks) do
-			local isRank = rank == name
-			if isRank then return index end
-		end
+	for index, rank in ipairs(InvationWatch.Ranks) do
+		if UnitAura(unitID, rank) then
+			return index
+		end	
 	end
-
 	return -1
 end
 
@@ -120,32 +113,27 @@ function InvationWatch:UpdateUnitRank(unitID)
 end
 
 function InvationWatch:ScanInvationRanks()
-	local numRaid, numParty = GetRealNumRaidMembers(), GetRealNumPartyMembers()
-	local n,g = nil,nil
+	local n,g;
 	local unitName = ""
 
 	-- Update self
-	InvationWatch:UpdateUnitRank("player")
-	--InvationWatch.Who[UnitName("player")] = InvationWatch:GetUnitInvationRank("player")
-		
-	if numRaid > 1 then
-		n = numRaid
-		g = "raid"
-	elseif numParty > 0 then
-		n = numParty
-		g = "party"
+	InvationWatch:UpdateUnitRank("PLAYER")
+	
+	if UnitInRaid("PLAYER") then
+		n = GetNumRaidMembers();
+		g = "RAID";
 	else
-		return nil
+		n = GetNumPartyMembers();
+		g = "PARTY";	
 	end
 	
-	--InvationWatch:Debug("Group "..g)
-	--InvationWatch:Debug("Num players "..n)
-	for i = 1, n do
-		local unitID = g..i
-		if UnitIsConnected(unitID) then
-			unitName = UnitName(unitID)
-			--InvationWatch.Who[unitName] = InvationWatch:GetUnitInvationRank(unitID)
-			InvationWatch:UpdateUnitRank(unitID)
+	if n > 0 then
+		for i = 1, n do
+			local unitID = g..i
+			if UnitIsConnected(unitID) then
+				unitName = UnitName(unitID)				
+				InvationWatch:UpdateUnitRank(unitID)
+			end
 		end
 	end
 end
@@ -154,16 +142,16 @@ function InvationWatch:WhoNotMajor()
 	InvationWatch:ScanInvationRanks()
 	if InvationWatch.Who == nil then return end	
 	local whoMsg = ""
-	for name, _ in pairs(InvationWatch.Who) do
+	for name, rank in pairs(InvationWatch.Who) do
 		local newRank, oldRank = InvationWatch:UpdateUnitRank(name)
 		if newRank == -1 then newRank = oldRank end
 		if newRank ~= 3 then
 			local msgWithRank = "%s (%s), %s"
 			local msgNoRank = "%s, %s"
-			if rank == -1 then
+			if newRank == -1 then
 				whoMsg = format(msgNoRank, name, whoMsg)
 			else
-				whoMsg = format(msgWithRank, name, InvationWatch.Ranks[rank], whoMsg)				
+				whoMsg = format(msgWithRank, name, InvationWatch.Ranks[newRank], whoMsg)				
 			end
 		else
 			InvationWatch:Debug(name.." has major ?", newRank == 3, newRank, InvationWatch.Ranks[newRank], InvationWatch.Ranks[3])
@@ -174,7 +162,7 @@ function InvationWatch:WhoNotMajor()
 	if whoMsg ~= "" then
 		whoMsg = format(L["Not Major: %s"], whoMsg)
 	else
-		whoMsg = L["Everyone is major"]
+		whoMsg = L["Everyone is Major!"]
 	end
 	InvationWatch:BroadcastMessage(whoMsg)
 end
@@ -196,12 +184,11 @@ function InvationWatch:RegisterChatCmd()
 end
 
 function InvationWatch:CleanupWho()
-	local numRaid, numParty = GetRealNumRaidMembers(), GetRealNumPartyMembers()
 	for name, rank in pairs(InvationWatch.Who) do
 		local inGroup = false
-		if numRaid > 1 then		
+		if UnitInRaid("PLAYER") then
 			inGroup = UnitInRaid(name)
-		elseif numParty > 0 then
+		else
 			inGroup = UnitInParty(name)
 		end
 		if inGroup == false then
@@ -215,74 +202,36 @@ function InvationWatch:UNIT_AURA(_, unitID)
 	if unitID then
 		local name = UnitName(unitID)
 		local newRank, oldRank = InvationWatch:UpdateUnitRank(unitID)
-		
 		if oldRank == 2 and newRank == 3 then
-			local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
 			local msg = format(L["%s is now Major"], name)
-			--InvationWatch:BroadcastMessage(msg)
-			local chatType = "PARTY"
-			if GetRealNumRaidMembers() > 1 then chatType = "RAID" end
-			SendChatMessage(msg, chatType)
-		end		
+			InvationWatch:BroadcastMessage(msg)			
+		end	
 	end
-
-	--local foundRank = false
-	--local unitName = UnitName(unitID)
-	--for i = 1, 40 do
-	--	local ua = {UnitAura(unitID, i)}
-	--	local name,rank,icon,count,dispelType,duration,expires,caster,isStealable,spellId = ua[1],ua[2],ua[3],ua[4],ua[5],ua[6],ua[7],ua[8],ua[10],ua[11]
-	--	if not spellId then break end
-	--	for index, rank in ipairs(InvationWatch.Ranks) do
-	--		local isRank = rank == name
-	--		if isRank then
-	--			--InvationWatch:Debug("UNIT_AURA " .. rank .. " " .. tostring(isRank))
-	--			foundRank = true
-	--			if InvationWatch.Who[unitName] ~= nil and InvationWatch.Who[unitName] == 2 and index == 3 then
-	--				local numRaid, numParty = GetNumRaidMembers(), GetNumPartyMembers()
-	--				local msg = format("%s is now Major", unitName)
-	--				if numRaid > 1 then
-	--					SendChatMessage(msg, "RAID")
-	--				elseif numParty > 0 then
-	--					SendChatMessage(msg, "PARTY")
-	--				end
-	--			end
-	--			InvationWatch.Who[unitName] = index
-	--		end
-	--	end
-	--end
-	--if InvationWatch.Who[unitName] == nil then
-	--	InvationWatch.Who[unitName] = -1
-	--end
 end
 
-function InvationWatch:PARTY_MEMBERS_CHANGED()
+function InvationWatch:CheckState()
 	InvationWatch:CleanupWho()
-end
-
-function InvationWatch:RAID_ROSTER_UPDATE()
-	InvationWatch:CleanupWho()
-	if UnitInRaid("player") == nil then
+	if UnitInRaid("PLAYER") == nil then
 		-- No longer in raid
-		InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED")
+		InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState")
 	end
 end
 
 function InvationWatch:PARTY_CONVERTED_TO_RAID()
 	InvationWatch:UnregisterEvent("PARTY_MEMBERS_CHANGED")
-	InvationWatch:RegisterEvent("RAID_ROSTER_UPDATE")
+	InvationWatch:RegisterEvent("RAID_ROSTER_UPDATE", "CheckState")
 end
 
 function InvationWatch:PLAYER_ENTERING_WORLD()
+	InvationWatch:CheckState()
 	InvationWatch:RegisterEvent("UNIT_AURA")
-	InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED")
+	InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED","CheckState")
 	InvationWatch:RegisterEvent("PARTY_CONVERTED_TO_RAID")
+	InvationWatch:RegisterEvent("ZONE_CHANGED_NEW_AREA","CheckState")
 	InvationWatch:MinimapButton_Refresh()
 end
 
 function InvationWatch:MinimapButton_Refresh()
-	-- make sure the correct icon is selected
-	-- NOTE: do this even if 'ShowMinimapButton' option is disabled
-	--		to support TitanPanel or other LDB frames
 	if InvationWatchSavedData.RankWatchEnabled then
 		InvationWatch.Minimap.LDBObject.icon = SpeakinSpell.iconpaths.ON
 	else

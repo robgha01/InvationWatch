@@ -8,5 +8,5 @@ L["Click|r to toggle SpeakinSpell on/off"] = "Click|r to toggle InvationWatch on
 L["Right-click|r to open the options"] = "Right-click|r to open the options"
 L["Type|r /iw to report who is not Major"] = "Type|r /iw to report who is not Major"
 L["Not Major: %s"] = "Not Major: %s"
-L["%s is now Major"] = "%s is now Major"
-L["Everyone is major"] = "Everyone is major"
+L["%s is now Major"] = "%s is now Major!"
+L["Everyone is Major!"] = "Everyone is Major!"
