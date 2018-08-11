@@ -2,6 +2,7 @@ InvationWatch = LibStub("AceAddon-3.0"):NewAddon("InvationWatch", "AceConsole-3.
 local L = LibStub("AceLocale-3.0"):GetLocale("InvationWatch", false)
 local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
 local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
+local tooltip
 InvationWatch._debug = false
 InvationWatch.Ranks = {
 	[0] = "Private",	
@@ -25,6 +26,11 @@ InvationWatch.iconpaths = {
 	ON = "Interface\\Icons\\Ability_Warrior_BattleShout", --recognizable i guess
 	OFF = "Interface\\Icons\\Ability_Rogue_Disguise", --this is OK for off
 }
+
+local function Reset()
+	wipe(InvationWatch.Who)
+end
+
 -- LDB launcher
 InvationWatch.Minimap = {
 	LDBObject = LDB:NewDataObject(
@@ -36,11 +42,17 @@ InvationWatch.Minimap = {
 			text = "InvationWatch",
 				
 			OnClick = function(clickedframe, button)
-				InvationWatchSavedData.RankWatchEnabled = not InvationWatchSavedData.RankWatchEnabled
-				InvationWatch:MinimapButton_Refresh()
+				if button == "RightButton" then 
+					Reset()
+					print("[InvationWatch] Invation wiped")
+				else 
+					InvationWatchSavedData.RankWatchEnabled = not InvationWatchSavedData.RankWatchEnabled
+					InvationWatch:MinimapButton_Refresh()
+				end
 			end,
-				
+			
 			OnTooltipShow = function(tt)
+				tooltip = tt
 				local line = "InvationWatch"
 				if InvationWatchSavedData.RankWatchEnabled then
 					line = line..tostring(InvationWatch.Colors.Minimap.ON)..L[" is ON"]
@@ -48,13 +60,44 @@ InvationWatch.Minimap = {
 					line = line..tostring(InvationWatch.Colors.Minimap.OFF)..L[" is OFF"]
 				end
 				tt:AddLine(line)
-				tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Click|r to toggle InvationWatch on/off"])
-				tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Type|r /iw to report who is not Major"])				
-				--tt:AddLine( tostring(InvationWatch.Colors.Minimap.Click) .. L["Right-click|r to open the options"])
+				tt:AddLine(tostring(InvationWatch.Colors.Minimap.Click) .. L["Click|r to toggle InvationWatch on/off"])
+				tt:AddLine(tostring(InvationWatch.Colors.Minimap.Click) .. L["Type|r /iw to report who is not Major"])				
+				tt:AddLine(tostring(InvationWatch.Colors.Minimap.Click) .. L["Right-click|r to force removal of current invation data"])
 			end,
 		}
 	)
 }
+ 
+local function SafeMsg(text, linewidth)
+    if not linewidth then
+        linewidth = 35
+    end
+ 
+    local spaceleft = linewidth
+    local res = {}
+    local line = {}
+	local function splittokens(s)
+		local res = {}
+		for w in s:gmatch("%S+") do
+			res[#res+1] = w
+		end
+		return res
+	end
+ 
+    for _, word in ipairs(splittokens(text)) do
+        if #word + 1 > spaceleft then
+            table.insert(res, table.concat(line, ' '))
+            line = {word}
+            spaceleft = linewidth - #word
+        else
+            table.insert(line, word)
+            spaceleft = spaceleft - (#word + 1)
+        end
+    end
+ 
+    table.insert(res, table.concat(line, ' '))
+    return res
+end
 
 function InvationWatch:Debug(msg, ...)
 	if InvationWatch._debug then
@@ -87,7 +130,10 @@ function InvationWatch:BroadcastMessage(msg)
 	if InvationWatch._debug then
 		print(msg)
 	else
-		SendChatMessage(msg, chatType)
+		-- split the message if over 250 chars
+		for i, m in ipairs(SafeMsg(msg, 35)) do
+			SendChatMessage(m, chatType)
+		end
 	end
 end
 
@@ -142,6 +188,7 @@ function InvationWatch:WhoNotMajor()
 	InvationWatch:ScanInvationRanks()
 	if InvationWatch.Who == nil then return end	
 	local whoMsg = ""
+	
 	for name, rank in pairs(InvationWatch.Who) do
 		local newRank, oldRank = InvationWatch:UpdateUnitRank(name)
 		if newRank == -1 then newRank = oldRank end
@@ -149,7 +196,7 @@ function InvationWatch:WhoNotMajor()
 			local msgWithRank = "%s (%s), %s"
 			local msgNoRank = "%s, %s"
 			if newRank == -1 then
-				whoMsg = format(msgNoRank, name, whoMsg)
+				whoMsg = format(msgNoRank, name, whoMsg)				
 			else
 				whoMsg = format(msgWithRank, name, InvationWatch.Ranks[newRank], whoMsg)				
 			end
@@ -164,6 +211,7 @@ function InvationWatch:WhoNotMajor()
 	else
 		whoMsg = L["Everyone is Major!"]
 	end
+
 	InvationWatch:BroadcastMessage(whoMsg)
 end
 
@@ -175,6 +223,9 @@ local function ChatCmd(input)
 	elseif input:trim() == "toggle" then
 		InvationWatchSavedData.RankWatchEnabled = not InvationWatchSavedData.RankWatchEnabled
 		InvationWatch:MinimapButton_Refresh()
+	elseif input:trim() == "reset" then
+		Reset()
+		print("[InvationWatch] Invation wiped")
 	end
 end
 
