@@ -128,7 +128,7 @@ function InvationWatch:BroadcastMessage(msg)
 	local chatType = "PARTY"
 	if GetRealNumRaidMembers() > 1 then chatType = "RAID" end
 	if InvationWatch._debug then
-		print(msg)
+		print(msg)		
 	else
 		-- split the message if over 250 chars
 		for i, m in ipairs(SafeMsg(msg, 35)) do
@@ -148,12 +148,19 @@ function InvationWatch:GetUnitInvationRank(unitID)
 end
 
 function InvationWatch:UpdateUnitRank(unitID)
+	local name = UnitName(unitID)
 	local newRank = InvationWatch:GetUnitInvationRank(unitID)
-	local oldRank = InvationWatch.Who[UnitName(unitID)]
+	local oldRank = InvationWatch.Who[name]
+
+	if oldRank == nil then
+		-- This player is not tracked
+		InvationWatch.Who[name] = -1
+		oldRank = -1
+	end
 
 	if newRank ~= -1 then
-		InvationWatch.Who[UnitName(unitID)] = newRank
-	end	
+		InvationWatch.Who[name] = newRank
+	end
 
 	return newRank, oldRank
 end
@@ -176,7 +183,7 @@ function InvationWatch:ScanInvationRanks()
 	if n > 0 then
 		for i = 1, n do
 			local unitID = g..i
-			if UnitIsConnected(unitID) then
+			if UnitIsPlayer(unitID) and UnitIsConnected(unitID) then
 				unitName = UnitName(unitID)				
 				InvationWatch:UpdateUnitRank(unitID)
 			end
@@ -200,8 +207,6 @@ function InvationWatch:WhoNotMajor()
 			else
 				whoMsg = format(msgWithRank, name, InvationWatch.Ranks[newRank], whoMsg)				
 			end
-		else
-			InvationWatch:Debug(name.." has major ?", newRank == 3, newRank, InvationWatch.Ranks[newRank], InvationWatch.Ranks[3])
 		end
 	end
 
@@ -263,14 +268,17 @@ end
 function InvationWatch:CheckState()
 	InvationWatch:CleanupWho()
 	if UnitInRaid("PLAYER") == nil then
-		-- No longer in raid
-		InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState")
+		InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState") -- No longer in raid
 	end
 end
 
 function InvationWatch:PARTY_CONVERTED_TO_RAID()
 	InvationWatch:UnregisterEvent("PARTY_MEMBERS_CHANGED")
 	InvationWatch:RegisterEvent("RAID_ROSTER_UPDATE", "CheckState")
+end
+
+function InvationWatch:OnCommReceived(prefix, message, distribution, sender)
+	print(prefix, message, distribution, sender)
 end
 
 function InvationWatch:PLAYER_ENTERING_WORLD()
