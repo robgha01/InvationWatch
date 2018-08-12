@@ -29,6 +29,7 @@ InvationWatch.iconpaths = {
 
 local function Reset()
 	wipe(InvationWatch.Who)
+	InvationWatch.Who = {}
 end
 
 -- LDB launcher
@@ -131,7 +132,7 @@ function InvationWatch:BroadcastMessage(msg)
 		print(msg)		
 	else
 		-- split the message if over 250 chars
-		for i, m in ipairs(SafeMsg(msg, 250)) do
+		for i, m in ipairs(SafeMsg(msg, 245)) do
 			SendChatMessage(m, chatType)
 		end
 	end
@@ -197,15 +198,17 @@ function InvationWatch:WhoNotMajor()
 	local whoMsg = ""
 	
 	for name, rank in pairs(InvationWatch.Who) do
-		local newRank, oldRank = InvationWatch:UpdateUnitRank(name)
-		if newRank == -1 then newRank = oldRank end
-		if newRank ~= 3 then
-			local msgWithRank = "%s (%s), %s"
-			local msgNoRank = "%s, %s"
-			if newRank == -1 then
-				whoMsg = format(msgNoRank, name, whoMsg)				
-			else
-				whoMsg = format(msgWithRank, name, InvationWatch.Ranks[newRank], whoMsg)				
+		if UnitName(name) then
+			local newRank, oldRank = InvationWatch:UpdateUnitRank(name)
+			if newRank == -1 then newRank = oldRank end
+			if newRank ~= 3 then
+				local msgWithRank = "%s (%s), %s"
+				local msgNoRank = "%s, %s"
+				if newRank == -1 then
+					whoMsg = format(msgNoRank, name, whoMsg)				
+				else
+					whoMsg = format(msgWithRank, name, InvationWatch.Ranks[newRank], whoMsg)				
+				end
 			end
 		end
 	end
@@ -284,7 +287,13 @@ function InvationWatch:OnCommReceived(prefix, message, distribution, sender)
 end
 
 function InvationWatch:CheckStatus(eventMsg, eventType)
-	InvationWatch:Debug("CheckStatus", eventMsg, eventType)
+	msg = "[IW] "..msg
+	if ViragDevTool_AddData then
+		ViragDevTool_AddData({eventMsg, eventType}, "CheckStatus")
+	else
+		print("CheckStatus", eventMsg, eventType)
+	end
+
 	if eventType == "AQ Invasion Controller" then
 		if eventMsg == L["You have successfully ended the invasion."] then
 			Reset()
