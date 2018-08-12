@@ -12,4 +12,4 @@ L["%s is now Major"] = "%s is now Major!"
 L["Everyone is Major!"] = "Everyone is Major!"
 
 -- Event messages do not change
-L["You have succeessfully ended the invasion."] = "You have successfully ended the invasion."
+L["You have successfully ended the invasion."] = "You have successfully ended the invasion."

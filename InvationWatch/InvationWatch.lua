@@ -286,7 +286,7 @@ end
 function InvationWatch:CheckStatus(eventMsg, eventType)
 	InvationWatch:Debug("CheckStatus", eventMsg, eventType)
 	if eventType == "AQ Invasion Controller" then
-		if eventMsg == L["You have succeessfully ended the invasion."] then
+		if eventMsg == L["You have successfully ended the invasion."] then
 			Reset()
 		end
 	end
