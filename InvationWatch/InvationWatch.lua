@@ -131,7 +131,7 @@ function InvationWatch:BroadcastMessage(msg)
 		print(msg)		
 	else
 		-- split the message if over 250 chars
-		for i, m in ipairs(SafeMsg(msg, 35)) do
+		for i, m in ipairs(SafeMsg(msg, 250)) do
 			SendChatMessage(m, chatType)
 		end
 	end
@@ -217,7 +217,7 @@ function InvationWatch:WhoNotMajor()
 		whoMsg = L["Everyone is Major!"]
 	end
 
-	InvationWatch:BroadcastMessage(whoMsg)
+	InvationWatch:BroadcastMessage("[InvationWatch] "..whoMsg)
 end
 
 local function ChatCmd(input)
@@ -256,12 +256,14 @@ end
 function InvationWatch:UNIT_AURA(_, unitID)
 	if InvationWatchSavedData.RankWatchEnabled == false then return end
 	if unitID then
-		local name = UnitName(unitID)
-		local newRank, oldRank = InvationWatch:UpdateUnitRank(unitID)
-		if oldRank == 2 and newRank == 3 then
-			local msg = format(L["%s is now Major"], name)
-			InvationWatch:BroadcastMessage(msg)			
-		end	
+		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) then
+			local name = UnitName(unitID)
+			local newRank, oldRank = InvationWatch:UpdateUnitRank(unitID)
+			if oldRank == 2 and newRank == 3 then
+				local msg = format(L["%s is now Major"], name)
+				InvationWatch:BroadcastMessage("[InvationWatch] "..msg)			
+			end
+		end
 	end
 end
 
@@ -281,12 +283,22 @@ function InvationWatch:OnCommReceived(prefix, message, distribution, sender)
 	print(prefix, message, distribution, sender)
 end
 
+function InvationWatch:CheckStatus(eventMsg, eventType)
+	InvationWatch:Debug("CheckStatus", eventMsg, eventType)
+	if eventType == "AQ Invasion Controller" then
+		if eventMsg == L["You have succeessfully ended the invasion."] then
+			Reset()
+		end
+	end
+end
+
 function InvationWatch:PLAYER_ENTERING_WORLD()
 	InvationWatch:CheckState()
 	InvationWatch:RegisterEvent("UNIT_AURA")
 	InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED","CheckState")
 	InvationWatch:RegisterEvent("PARTY_CONVERTED_TO_RAID")
 	InvationWatch:RegisterEvent("ZONE_CHANGED_NEW_AREA","CheckState")
+	InvationWatch:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "CheckStatus")
 	InvationWatch:MinimapButton_Refresh()
 end
 

@@ -10,3 +10,6 @@ L["Type|r /iw to report who is not Major"] = "Type|r /iw to report who is not Ma
 L["Not Major: %s"] = "Not Major: %s"
 L["%s is now Major"] = "%s is now Major!"
 L["Everyone is Major!"] = "Everyone is Major!"
+
+-- Event messages do not change
+L["You have succeessfully ended the invasion."] = "You have successfully ended the invasion."
