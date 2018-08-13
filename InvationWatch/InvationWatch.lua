@@ -30,6 +30,7 @@ InvationWatch.iconpaths = {
 local function Reset()
 	wipe(InvationWatch.Who)
 	InvationWatch.Who = {}
+	InvationWatch.CurrentWave = 0
 end
 
 -- LDB launcher
@@ -286,8 +287,11 @@ function InvationWatch:OnCommReceived(prefix, message, distribution, sender)
 	print(prefix, message, distribution, sender)
 end
 
-function InvationWatch:CheckStatus(eventMsg, eventType)
-	msg = "[IW] "..msg
+function InvationWatch:IncrementWave()
+	InvationWatch.CurrentWave = InvationWatch.CurrentWave + 1
+end
+
+function InvationWatch:CheckStatus(event, eventMsg, eventType)
 	if ViragDevTool_AddData then
 		ViragDevTool_AddData({eventMsg, eventType}, "CheckStatus")
 	else
@@ -297,6 +301,8 @@ function InvationWatch:CheckStatus(eventMsg, eventType)
 	if eventType == "AQ Invasion Controller" then
 		if eventMsg == L["You have successfully ended the invasion."] then
 			Reset()
+		elseif eventMsg == L["Qiraji reinforcements are arriving in 15 seconds. Prepare yourself. Hero!"] then
+			InvationWatch:IncrementWave()	
 		end
 	end
 end

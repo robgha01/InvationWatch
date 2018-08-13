@@ -13,3 +13,5 @@ L["Everyone is Major!"] = "Everyone is Major!"
 
 -- Event messages do not change
 L["You have successfully ended the invasion."] = "You have successfully ended the invasion."
+L["Qiraji reinforcements are arriving in 15 seconds. Prepare yourself. Hero!"] = "Qiraji reinforcements are arriving in 15 seconds. Prepare yourself. Hero!"
+L["A Qiraji Harbinger is approaching. Steel your resolve and end this invasion. once and for all!"] = "A Qiraji Harbinger is approaching. Steel your resolve and end this invasion. once and for all!"
