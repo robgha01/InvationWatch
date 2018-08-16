@@ -322,8 +322,8 @@ end
 
 function InvationWatch:MinimapButton_Refresh()
 	if InvationWatchSavedData.RankWatchEnabled then
-		InvationWatch.Minimap.LDBObject.icon = SpeakinSpell.iconpaths.ON
+		InvationWatch.Minimap.LDBObject.icon = InvationWatch.iconpaths.ON
 	else
-		InvationWatch.Minimap.LDBObject.icon = SpeakinSpell.iconpaths.OFF
+		InvationWatch.Minimap.LDBObject.icon = InvationWatch.iconpaths.OFF
 	end
 end
