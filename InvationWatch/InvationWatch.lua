@@ -276,6 +276,7 @@ function InvationWatch:CheckState()
 	if UnitInRaid("PLAYER") == nil then
 		InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState") -- No longer in raid
 	end
+	InvationWatch:ScanInvationRanks()
 end
 
 function InvationWatch:PARTY_CONVERTED_TO_RAID()
@@ -313,7 +314,9 @@ function InvationWatch:PLAYER_ENTERING_WORLD()
 	InvationWatch:RegisterEvent("PARTY_MEMBERS_CHANGED","CheckState")
 	InvationWatch:RegisterEvent("PARTY_CONVERTED_TO_RAID")
 	InvationWatch:RegisterEvent("ZONE_CHANGED_NEW_AREA","CheckState")
+	InvationWatch:RegisterEvent("PLAYER_UNGHOST", "CheckState")
 	InvationWatch:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "CheckStatus")
+	
 	InvationWatch:MinimapButton_Refresh()
 end
 
