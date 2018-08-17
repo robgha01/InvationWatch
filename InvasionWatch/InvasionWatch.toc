@@ -1,0 +1,17 @@
+## Interface: 30300
+## Title: InvasionWatch
+## Version: 1.0
+## Author: Areasis
+## SavedVariablesPerCharacter: InvasionWatchSavedData
+## RequiredDeps: APIWatch
+
+#@no-lib-strip@
+embeds.xml
+#@end-no-lib-strip@
+
+Locales\Locale-enUS.lua
+Framework\Bootstrap.lua
+Framework\Options.lua
+Framework\Utility.lua
+Framework\Commands.lua
+InvasionWatch.lua

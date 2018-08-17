@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Deploy" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
-    <Name>InvationWatch</Name>
+    <Name>InvasionWatch</Name>
     <ProjectGuid>989dfd3d-ae68-4c89-b99b-dc16136f495c</ProjectGuid>
     <AssemblyName>InvationWatch</AssemblyName>
     <RootNamespace>InvationWatch</RootNamespace>
@@ -11,16 +11,25 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="AelixiaInvationCode.lua">
+    <Content Include="AelixiaInvasionCode.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Config.lua">
+    <Content Include="Framework\Bootstrap.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="InvationWatch.toc">
+    <Content Include="Framework\Commands.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Framework\Options.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="Framework\Utility.lua">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="InvasionWatch.toc">
       <SubType>TableOfContents</SubType>
     </Content>
-    <Content Include="InvationWatch.lua">
+    <Content Include="InvasionWatch.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="embeds.xml">
@@ -243,6 +252,7 @@
     <Folder Include="Libs\LibDBIcon-1.0\" />
     <Folder Include="Libs\LibStub\" />
     <Folder Include="Locales" />
+    <Folder Include="Framework" />
   </ItemGroup>
   <Import Project="$(DevEnvDir)\Extensions\Tools\MSBuild\AddonStudio\Wow\3.0\WowAddonStudio.targets" />
   <!--
