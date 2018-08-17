@@ -1,6 +1,6 @@
-function InvasionWatch:GetUnitInvasionRank(unitID)
+function EventWatchInvasion:GetUnitInvasionRank(unitID)
 	if unitID == nil or UnitIsPlayer(unitID) == false then return end
-	for index, rank in ipairs(InvasionWatch.Ranks) do
+	for index, rank in ipairs(EventWatchInvasion.Ranks) do
 		if UnitAura(unitID, rank) then
 			return index
 		end	
@@ -8,30 +8,30 @@ function InvasionWatch:GetUnitInvasionRank(unitID)
 	return -1
 end
 
-function InvasionWatch:UpdateUnitRank(unitID)
+function EventWatchInvasion:UpdateUnitRank(unitID)
 	local name = UnitName(unitID)
-	local newRank = InvasionWatch:GetUnitInvasionRank(unitID)
-	local oldRank = InvasionWatch.Who[name]
+	local newRank = EventWatchInvasion:GetUnitInvasionRank(unitID)
+	local oldRank = EventWatchInvasion.Who[name]
 
 	if oldRank == nil then
 		-- This player is not tracked
-		InvasionWatch.Who[name] = -1
+		EventWatchInvasion.Who[name] = -1
 		oldRank = -1
 	end
 
 	if newRank ~= -1 then
-		InvasionWatch.Who[name] = newRank
+		EventWatchInvasion.Who[name] = newRank
 	end
 
 	return newRank, oldRank
 end
 
-function InvasionWatch:ScanInvasionRanks()
+function EventWatchInvasion:ScanInvasionRanks()
 	local n,g;
 	local unitName = ""
 
 	-- Update self
-	InvasionWatch:UpdateUnitRank("PLAYER")
+	EventWatchInvasion:UpdateUnitRank("PLAYER")
 	
 	if UnitInRaid("PLAYER") then
 		n = GetNumRaidMembers();
@@ -46,14 +46,14 @@ function InvasionWatch:ScanInvasionRanks()
 			local unitID = g..i
 			if UnitIsPlayer(unitID) and UnitIsConnected(unitID) then
 				unitName = UnitName(unitID)				
-				InvasionWatch:UpdateUnitRank(unitID)
+				EventWatchInvasion:UpdateUnitRank(unitID)
 			end
 		end
 	end
 end
 
-function InvasionWatch:CleanupWho()
-	for name, rank in pairs(InvasionWatch.Who) do
+function EventWatchInvasion:CleanupWho()
+	for name, rank in pairs(EventWatchInvasion.Who) do
 		local inGroup = false
 		if UnitInRaid("PLAYER") then
 			inGroup = UnitInRaid(name)
@@ -61,24 +61,24 @@ function InvasionWatch:CleanupWho()
 			inGroup = UnitInParty(name)
 		end
 		if inGroup == false then
-			InvasionWatch.Who[name] = nil -- Remove non existing players
+			EventWatchInvasion.Who[name] = nil -- Remove non existing players
 		end
 	end
 end
 
-function InvasionWatch:CheckState()
-	InvasionWatch:CleanupWho()
+function EventWatchInvasion:CheckState()
+	EventWatchInvasion:CleanupWho()
 	if UnitInRaid("PLAYER") == nil then
-		InvasionWatch:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState") -- No longer in raid
+		EventWatchInvasion:RegisterEvent("PARTY_MEMBERS_CHANGED", "CheckState") -- No longer in raid
 	end
-	InvasionWatch:ScanInvasionRanks()
+	EventWatchInvasion:ScanInvasionRanks()
 end
 
-function InvasionWatch:IncrementWave()
-	InvasionWatch.CurrentWave = InvasionWatch.CurrentWave + 1
+function EventWatchInvasion:IncrementWave()
+	EventWatchInvasion.CurrentWave = EventWatchInvasion.CurrentWave + 1
 end
 
-function InvasionWatch:CheckStatus(event, eventMsg, eventType)
+function EventWatchInvasion:CheckStatus(event, eventMsg, eventType)
 	if ViragDevTool_AddData then
 		ViragDevTool_AddData({eventMsg, eventType}, "CheckStatus")
 	else
@@ -89,7 +89,7 @@ function InvasionWatch:CheckStatus(event, eventMsg, eventType)
 		if eventMsg == L["You have successfully ended the invasion."] then
 			Reset()
 		elseif eventMsg == L["Qiraji reinforcements are arriving in 15 seconds. Prepare yourself. Hero!"] then
-			InvasionWatch:IncrementWave()	
+			EventWatchInvasion:IncrementWave()	
 		end
 	end
 end

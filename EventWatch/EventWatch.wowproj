@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Deploy" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
-    <Name>APIWatch</Name>
+    <Name>EventWatch</Name>
     <ProjectGuid>f347da16-6f56-47c2-a52b-76f3ec921eae</ProjectGuid>
     <AssemblyName>APIWatch</AssemblyName>
     <RootNamespace>APIWatch</RootNamespace>
@@ -11,7 +11,7 @@
     <OutputPath>.</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="APIWatch.toc">
+    <Content Include="EventWatch.toc">
       <SubType>TableOfContents</SubType>
     </Content>
     <Content Include="Framework\Options.lua">

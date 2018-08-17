@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Deploy" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Default</Configuration>
-    <Name>InvasionWatch</Name>
+    <Name>EventWatch_Invasion</Name>
     <ProjectGuid>989dfd3d-ae68-4c89-b99b-dc16136f495c</ProjectGuid>
     <AssemblyName>InvationWatch</AssemblyName>
     <RootNamespace>InvationWatch</RootNamespace>
@@ -13,6 +13,9 @@
   <ItemGroup>
     <Content Include="AelixiaInvasionCode.lua">
       <SubType>Code</SubType>
+    </Content>
+    <Content Include="EventWatch_Invasion.toc">
+      <SubType>TableOfContents</SubType>
     </Content>
     <Content Include="Framework\Bootstrap.lua">
       <SubType>Code</SubType>
@@ -26,10 +29,10 @@
     <Content Include="Framework\Utility.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="InvasionWatch.toc">
+    <Content Include="EventWatchInvasion.toc">
       <SubType>TableOfContents</SubType>
     </Content>
-    <Content Include="InvasionWatch.lua">
+    <Content Include="EventWatchInvasion.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="embeds.xml">

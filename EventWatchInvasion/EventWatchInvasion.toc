@@ -1,9 +1,9 @@
 ## Interface: 30300
-## Title: InvasionWatch
+## Title: EventWatch_Invasion
 ## Version: 1.0
 ## Author: Areasis
-## SavedVariablesPerCharacter: InvasionWatchSavedData
-## RequiredDeps: APIWatch
+## SavedVariablesPerCharacter: EventWatchInvasionSavedData
+## RequiredDeps: EventWatch
 
 #@no-lib-strip@
 embeds.xml
@@ -14,4 +14,4 @@ Framework\Bootstrap.lua
 Framework\Options.lua
 Framework\Utility.lua
 Framework\Commands.lua
-InvasionWatch.lua
+EventWatchInvasion.lua

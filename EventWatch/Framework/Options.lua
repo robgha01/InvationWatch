@@ -1,0 +1,1 @@
+EventWatch._debug = false

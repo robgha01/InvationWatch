@@ -1,5 +1,5 @@
-function APIWatch:Debug(msg, ...)
-	if APIWatch._debug then
+function EventWatch:Debug(msg, ...)
+	if EventWatch._debug then
 		if ViragDevTool_AddData then
 			ViragDevTool_AddData({...}, msg)
 		else
@@ -8,7 +8,7 @@ function APIWatch:Debug(msg, ...)
 	end
 end
 
-function APIWatch:SafeMsg(text, linewidth)
+function EventWatch:SafeMsg(text, linewidth)
     if not linewidth then
         linewidth = 35
     end
@@ -39,14 +39,14 @@ function APIWatch:SafeMsg(text, linewidth)
     return res
 end
 
-function APIWatch:BroadcastMessage(msg)
+function EventWatch:BroadcastMessage(msg)
 	local chatType = "PARTY"
 	if GetRealNumRaidMembers() > 1 then chatType = "RAID" end
-	if APIWatch._debug then
+	if EventWatch._debug then
 		print(msg)		
 	else
 		-- split the message if over 250 chars
-		for i, m in ipairs(APIWatch:SafeMsg(msg, 245)) do
+		for i, m in ipairs(EventWatch:SafeMsg(msg, 245)) do
 			SendChatMessage(m, chatType)
 		end
 	end

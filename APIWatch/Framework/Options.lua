@@ -1,1 +1,0 @@
-APIWatch._debug = false
