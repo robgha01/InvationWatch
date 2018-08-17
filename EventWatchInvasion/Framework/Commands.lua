@@ -8,7 +8,7 @@ local function ChatCmd(input)
 		EventWatchInvasion:MinimapButton_Refresh()
 	elseif input:trim() == "reset" then
 		Reset()
-		print("[EventWatchInvasion] Invasion wiped")
+		print("[Invasion] Invasion wiped")
 	end
 end
 

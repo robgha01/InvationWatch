@@ -44,6 +44,9 @@
     <Content Include="Locales\Locale-enUS.lua">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="MinimapButton.lua">
+      <SubType>Code</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Libs/LibStub/LibStub.lua">

@@ -14,7 +14,7 @@
     <Content Include="EventWatch.toc">
       <SubType>TableOfContents</SubType>
     </Content>
-    <Content Include="Framework\Options.lua">
+    <Content Include="Framework\Core.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="Framework\Utility.lua">

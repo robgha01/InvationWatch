@@ -1,3 +1,5 @@
+local L = LibStub("AceLocale-3.0"):GetLocale("EventWatchInvasion", false)
+
 function EventWatchInvasion:GetUnitInvasionRank(unitID)
 	if unitID == nil or UnitIsPlayer(unitID) == false then return end
 	for index, rank in ipairs(EventWatchInvasion.Ranks) do

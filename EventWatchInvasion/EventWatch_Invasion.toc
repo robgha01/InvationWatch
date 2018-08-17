@@ -14,4 +14,5 @@ Framework\Bootstrap.lua
 Framework\Options.lua
 Framework\Utility.lua
 Framework\Commands.lua
+MinimapButton.lua
 EventWatch_Invasion.lua

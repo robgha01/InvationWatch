@@ -1,6 +1,4 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("EventWatchInvasion", false)
-local LDB = LibStub:GetLibrary("LibDataBroker-1.1")
-local LDBIcon = LDB and LibStub("LibDBIcon-1.0", true)
 local tooltip
 
 local function Reset()
@@ -51,7 +49,7 @@ function EventWatchInvasion:WhoNotMajor()
 		whoMsg = L["Everyone is Major!"]
 	end
 
-	EventWatch:BroadcastMessage("[EventWatchInvasion] "..whoMsg)
+	EventWatch:BroadcastMessage("["..L["Invasion"].."] "..whoMsg)
 end
 
 function EventWatchInvasion:UNIT_AURA(_, unitID)
@@ -62,7 +60,7 @@ function EventWatchInvasion:UNIT_AURA(_, unitID)
 			local newRank, oldRank = EventWatchInvasion:UpdateUnitRank(unitID)
 			if oldRank == 2 and newRank == 3 then
 				local msg = format(L["%s is now Major"], name)
-				EventWatch:BroadcastMessage("[EventWatchInvasion] "..msg)			
+				EventWatch:BroadcastMessage("["..L["Invasion"].."] "..msg)			
 			end
 		end
 	end
@@ -87,12 +85,4 @@ function EventWatchInvasion:PLAYER_ENTERING_WORLD()
 	EventWatchInvasion:RegisterEvent("CHAT_MSG_RAID_BOSS_EMOTE", "CheckStatus")
 	
 	EventWatchInvasion:MinimapButton_Refresh()
-end
-
-function EventWatchInvasion:MinimapButton_Refresh()
-	if EventWatchInvasionSavedData.RankWatchEnabled then
-		EventWatchInvasion.Minimap.LDBObject.icon = EventWatchInvasion.iconpaths.ON
-	else
-		EventWatchInvasion.Minimap.LDBObject.icon = EventWatchInvasion.iconpaths.OFF
-	end
 end

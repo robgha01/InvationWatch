@@ -3,5 +3,5 @@
 ## Version: 1.0
 ## Author: Areasis
 
-Framework\Options.lua
+Framework\Core.lua
 Framework\Utility.lua
