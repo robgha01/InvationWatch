@@ -9,7 +9,7 @@ L["Click|r to toggle EventWatch on/off"] = true
 L["Right-click|r to force removal of current invation data"] = true
 L["Type|r /iw to report who is not Major"] = true
 L["Not Major: %s"] = true
-L["%s is now Major"] = true
+L["%s is now Major!"] = true
 L["Everyone is Major!"] = true
 
 -- Event messages do not change

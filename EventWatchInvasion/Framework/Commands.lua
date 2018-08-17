@@ -7,7 +7,7 @@ local function ChatCmd(input)
 		EventWatchInvasionSavedData.RankWatchEnabled = not EventWatchInvasionSavedData.RankWatchEnabled
 		EventWatchInvasion:MinimapButton_Refresh()
 	elseif input:trim() == "reset" then
-		Reset()
+		EventWatchInvasion:Reset()
 		print("[Invasion] Invasion wiped")
 	end
 end

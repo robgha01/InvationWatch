@@ -1,5 +1,11 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("EventWatchInvasion", false)
 
+function EventWatchInvasion:Reset()
+	wipe(EventWatchInvasion.Who)
+	EventWatchInvasion.Who = {}
+	EventWatchInvasion.CurrentWave = 0
+end
+
 function EventWatchInvasion:GetUnitInvasionRank(unitID)
 	if unitID == nil or UnitIsPlayer(unitID) == false then return end
 	for index, rank in ipairs(EventWatchInvasion.Ranks) do
@@ -89,7 +95,7 @@ function EventWatchInvasion:CheckStatus(event, eventMsg, eventType)
 
 	if eventType == "AQ Invasion Controller" then
 		if eventMsg == L["You have successfully ended the invasion."] then
-			Reset()
+			EventWatchInvasion:Reset()
 		elseif eventMsg == L["Qiraji reinforcements are arriving in 15 seconds. Prepare yourself. Hero!"] then
 			EventWatchInvasion:IncrementWave()	
 		end

@@ -1,11 +1,13 @@
 local L = LibStub("AceLocale-3.0"):GetLocale("EventWatchInvasion", false)
 local tooltip
 
-local function Reset()
-	wipe(EventWatchInvasion.Who)
-	EventWatchInvasion.Who = {}
-	EventWatchInvasion.CurrentWave = 0
-end
+--level 60 score required for each rank:
+--Rank 1 40,000
+--Rank 2 80,000
+--Rank 3 120,000
+--Rank 4 160,000
+--score from damage done is 1:1 ratio, damage taken is 1:1.25 ratio and healing done is 1:1.5 ratio
+--overhealing doesnt count but overkill damage does
 
 function EventWatchInvasion:OnInitialize()
 	-- Called when the addon is loaded
@@ -59,7 +61,7 @@ function EventWatchInvasion:UNIT_AURA(_, unitID)
 			local name = UnitName(unitID)
 			local newRank, oldRank = EventWatchInvasion:UpdateUnitRank(unitID)
 			if oldRank == 2 and newRank == 3 then
-				local msg = format(L["%s is now Major"], name)
+				local msg = format(L["%s is now Major!"], name)
 				EventWatch:BroadcastMessage("["..L["Invasion"].."] "..msg)			
 			end
 		end
