@@ -29,10 +29,7 @@
     <Content Include="Framework\Utility.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="EventWatchInvasion.toc">
-      <SubType>TableOfContents</SubType>
-    </Content>
-    <Content Include="EventWatchInvasion.lua">
+    <Content Include="EventWatch_Invasion.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="embeds.xml">
