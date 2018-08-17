@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # WowAddOnStudio Solution File, Format Version 11.00
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{E6E1D386-69D8-4755-9E61-0950293915FC}") = "InvasionWatch", "InvationWatch\InvasionWatch.wowproj", "{989DFD3D-AE68-4C89-B99B-DC16136F495C}"
+Project("{E6E1D386-69D8-4755-9E61-0950293915FC}") = "InvasionWatch", "InvasionWatch\InvasionWatch.wowproj", "{989DFD3D-AE68-4C89-B99B-DC16136F495C}"
 EndProject
 Project("{E6E1D386-69D8-4755-9E61-0950293915FC}") = "APIWatch", "APIWatch\APIWatch.wowproj", "{F347DA16-6F56-47C2-A52B-76F3EC921EAE}"
 EndProject
