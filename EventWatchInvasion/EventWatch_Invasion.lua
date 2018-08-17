@@ -54,12 +54,12 @@ function I:WhoNotMajor()
 				local msgWithRank = "%s (%s), %s"
 				local msgWithProg = "%s (%s%%), %s"
 				local msgNoRank = "%s, %s"
-
 				local score = I:GetScore(player)
-				if score and (score < 160000) then
-					list = format(msgWithProg, name, math.floor((score/160000)*100), list)
-				elseif newRank == -1 then
+
+				if newRank == -1 then
 					list = format(msgNoRank, name, list)
+				elseif score and (score < 160000) and score >= 0 then
+					list = format(msgWithProg, name, math.floor((score/160000)*100), list)				
 				else
 					list = format(msgWithRank, name, I.Ranks[newRank], list)
 				end
