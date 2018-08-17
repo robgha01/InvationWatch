@@ -199,7 +199,7 @@ function InvationWatch:WhoNotMajor()
 	local whoMsg = ""
 	
 	for name, rank in pairs(InvationWatch.Who) do
-		if UnitName(name) then
+		if UnitName(name) and UnitIsConnected(name) then
 			local newRank, oldRank = InvationWatch:UpdateUnitRank(name)
 			if newRank == -1 then newRank = oldRank end
 			if newRank ~= 3 then
@@ -260,7 +260,7 @@ end
 function InvationWatch:UNIT_AURA(_, unitID)
 	if InvationWatchSavedData.RankWatchEnabled == false then return end
 	if unitID then
-		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) then
+		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) and (UnitInParty(unitID) or UnitInRaid(unitID)) then
 			local name = UnitName(unitID)
 			local newRank, oldRank = InvationWatch:UpdateUnitRank(unitID)
 			if oldRank == 2 and newRank == 3 then
