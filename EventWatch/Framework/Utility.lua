@@ -51,3 +51,15 @@ function EventWatch:BroadcastMessage(msg)
 		end
 	end
 end
+
+function EventWatch:GetGroup()
+	if UnitInRaid("PLAYER") then
+		return "RAID",GetNumRaidMembers();
+	else
+		return "PARTY",GetNumPartyMembers();
+	end
+end
+
+function EventWatch:IsRaidMember(flags)
+	return (bit.band(flags,COMBATLOG_OBJECT_TYPE_PLAYER) > 0) and ((bit.band(flags,COMBATLOG_OBJECT_AFFILIATION_RAID) > 0) or (bit.band(flags,COMBATLOG_OBJECT_AFFILIATION_PARTY) > 0) or (bit.band(flags,COMBATLOG_OBJECT_AFFILIATION_MINE) > 0));
+end

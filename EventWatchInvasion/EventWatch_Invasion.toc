@@ -12,7 +12,7 @@ embeds.xml
 Locales\Locale-enUS.lua
 Framework\Bootstrap.lua
 Framework\Options.lua
-Framework\Utility.lua
+Framework\Core.lua
 Framework\Commands.lua
 MinimapButton.lua
 EventWatch_Invasion.lua

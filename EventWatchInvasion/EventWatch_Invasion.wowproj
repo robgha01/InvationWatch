@@ -26,7 +26,7 @@
     <Content Include="Framework\Options.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Framework\Utility.lua">
+    <Content Include="Framework\Core.lua">
       <SubType>Code</SubType>
     </Content>
     <Content Include="EventWatch_Invasion.lua">
