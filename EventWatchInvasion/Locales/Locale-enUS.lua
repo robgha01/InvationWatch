@@ -5,7 +5,7 @@ if not L then return end
 L["Invasion"] = true
 L[" is ON"] = true
 L[" is OFF"] = true
-L["Click|r to toggle EventWatchInvasion on/off"] = true
+L["Click|r to toggle EventWatch on/off"] = true
 L["Right-click|r to force removal of current invation data"] = true
 L["Type|r /iw to report who is not Major"] = true
 L["Not Major: %s"] = true

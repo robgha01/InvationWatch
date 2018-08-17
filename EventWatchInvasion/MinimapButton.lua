@@ -29,14 +29,14 @@ EventWatchInvasion.Minimap = {
 			
 			OnTooltipShow = function(tt)
 				tooltip = tt
-				local line = L["Invasion"]
+				local line = "Event Watch"
 				if EventWatchInvasionSavedData.RankWatchEnabled then
 					line = line..tostring(EventWatchInvasion.Colors.Minimap.ON)..L[" is ON"]
 				else
 					line = line..tostring(EventWatchInvasion.Colors.Minimap.OFF)..L[" is OFF"]
 				end
 				tt:AddLine(line)
-				tt:AddLine(tostring(EventWatchInvasion.Colors.Minimap.Click) .. L["Click|r to toggle EventWatchInvasion on/off"])
+				tt:AddLine(tostring(EventWatchInvasion.Colors.Minimap.Click) .. L["Click|r to toggle EventWatch on/off"])
 				tt:AddLine(tostring(EventWatchInvasion.Colors.Minimap.Click) .. L["Type|r /iw to report who is not Major"])				
 				tt:AddLine(tostring(EventWatchInvasion.Colors.Minimap.Click) .. L["Right-click|r to force removal of current invation data"])
 			end,
