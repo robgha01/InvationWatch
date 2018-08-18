@@ -16,6 +16,7 @@ function I:OnInitialize()
 	I:RegisterChatCmd()
 	I:RegisterEvent("PLAYER_ENTERING_WORLD")
 
+	I.ranks["None"] = 0
 	for rankID,rankName in ipairs(I.ranksByID) do
 		I.ranks[rankName] = rankID
 	end
@@ -49,14 +50,14 @@ function I:WhoNotMajor()
 	for name,player in pairs(I.players) do
 		if UnitName(name) and UnitIsConnected(name) then
 			local newRank, oldRank = I:UpdateRank(name)
-			if newRank == -1 then newRank = oldRank end
+			if newRank == I.ranks["None"] then newRank = oldRank end
 			if newRank ~= I.ranks["Major"] then
 				local msgWithRank = "%s (%s), %s"
 				local msgWithProg = "%s (%s%%), %s"
 				local msgNoRank = "%s, %s"
 				local score = I:GetScore(player)
 
-				if newRank == -1 then
+				if newRank == I.ranks["None"] then
 					list = format(msgNoRank, name, list)
 				elseif score and (score < 160000) and score >= 0 then
 					list = format(msgWithProg, name, math.floor((score/160000)*100), list)				
@@ -97,6 +98,7 @@ function I:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 		if I.ranks[arg2] then
 			I:SetRank(destName,arg2)
 			I:ScanRanks()
+			I.isInvasion = true
 		end
 	else
 		local amount
@@ -106,9 +108,11 @@ function I:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 		if EventWatch:IsRaidMember(sourceFlags) and I.mobs[destName] and subEvent:find("_DAMAGE$") then
 			amount = amount or arg4 or 0
 			I:AddStat(sourceName,1,amount)
+			I.isInvasion = true
 		elseif EventWatch:IsRaidMember(destFlags) and I.mobs[sourceName] and subEvent:find("_DAMAGE$") then
 			amount = amount or arg4 or 0
 			I:AddStat(destName,2,amount)
+			I.isInvasion = true
 		elseif EventWatch:IsRaidMember(sourceFlags) and subEvent:find("_HEAL$") then
 			amount = amount or ((arg4 or 0)-(arg5 or 0)) or 0
 			I:AddStat(sourceName,3,amount)

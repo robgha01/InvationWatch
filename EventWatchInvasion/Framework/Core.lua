@@ -6,12 +6,15 @@ function I:NewInvasion()
 	I.players = {}
 	I.announced = false
 	I.currentWave = 0
+	I.isInvasion = false
 end
 
 function I:GetPlayer(name)
 	if not I.players[name] then
 		I.players[name] = {
-			rank = -1
+			rank = I.ranks["None"],
+			total = { damage = 0, taken = 0, healing = 0 },
+			current = { damage = 0, taken = 0, healing = 0 },
 		}
 	end
 	return I.players[name]
@@ -34,7 +37,7 @@ function I:GetUnitRank(unitID)
 			return index
 		end
 	end
-	return -1
+	return I.ranks["None"]
 end
 
 function I:UpdateRank(nameOrUnitID)
@@ -43,7 +46,7 @@ function I:UpdateRank(nameOrUnitID)
 	local newRank = I:GetUnitRank(name)
 	local oldRank = player.rank
 
-	if newRank ~= -1 then
+	if newRank ~= I.ranks["None"] then
 		I:SetRank(name, newRank)
 	end
 

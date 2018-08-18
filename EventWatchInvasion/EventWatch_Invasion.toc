@@ -16,3 +16,4 @@ Framework\Core.lua
 Framework\Commands.lua
 MinimapButton.lua
 EventWatch_Invasion.lua
+Modules\WeakAura.lua

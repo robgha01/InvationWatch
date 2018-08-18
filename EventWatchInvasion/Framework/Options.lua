@@ -10,8 +10,23 @@ EventWatchInvasionSavedData = {
 }
 
 --- Constants
+--I.ranksBySpellID = {
+--	[985060] = "Private",
+--	[2] = "Lieutenant",
+--	[3] = "Captain",
+--	[4] = "Major",
+--}
+
+I.rankIcons = {
+	["Privat"] = "Interface/Icons/achievement-pvp-h-09",
+	["Lieutenant"] = "Interface/Icons/achievement-pvp-h-09",
+	["Captain"] = "Interface/Icons/achievement-pvp-h-09",
+	["Major"] = "Interface/Icons/achievement-pvp-h-09",
+}
+
 I.ranksByID = {
-	[1] = "Private",	
+	[0] = "None",
+	[1] = "Privat",
 	[2] = "Lieutenant",
 	[3] = "Captain",
 	[4] = "Major",
@@ -66,3 +81,4 @@ I.Colors = {
 	}
 --]]
 I.players = {}
+I.isInvasion = false
