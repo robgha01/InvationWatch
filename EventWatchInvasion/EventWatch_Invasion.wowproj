@@ -47,7 +47,7 @@
     <Content Include="MinimapButton.lua">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Modules\ImportWeakAura.lua">
+    <Content Include="Modules\WeakAura.lua">
       <SubType>Code</SubType>
     </Content>
   </ItemGroup>
