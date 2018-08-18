@@ -24,6 +24,7 @@ end
 
 local function ShowHelp()
 	chat("Invasion Watch help:")
+	chat("  /iw           -  Reports who is not major")
 	chat("  /iw toggle    -  Toggles the Major auto report On/Off")
 	chat("  /iw reset     -  Wipe the current invasion data")
 	chat("  /iw wa        -  Imports the weakauras (progressbar)")
