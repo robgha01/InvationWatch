@@ -11,6 +11,7 @@ end
 
 function I:GetPlayer(name)
 	if not I.players[name] then
+		EventWatch:Debug(format("GetPlayer: '%s' - creating a new datastore", name))
 		I.players[name] = {
 			rank = I.ranks["None"],
 			total = { damage = 0, taken = 0, healing = 0 },
@@ -26,17 +27,25 @@ function I:SetRank(name, rank)
 	if player.rank ~= I.ranks[rank] then
 		player.rank = I.ranks[rank]
 		player.current = nil
+		EventWatch:Debug(format("SetRank: '%s, %s' - rank updated", name, rank))
 		return true
 	end
+
+	EventWatch:Debug(format("SetRank: '%s, %s' - not updating rank", name, rank))
+	return false
 end
 
 function I:GetUnitRank(unitID)
 	if unitID == nil or UnitIsPlayer(unitID) == false then return end
-	for index, rank in ipairs(I.ranks) do
+	for rank, index in pairs(I.ranks) do
+		EventWatch:Debug(format("GetUnitRank: Checking '%s, %s'", index, rank), UnitAura(unitID, rank))
 		if UnitAura(unitID, rank) then
+			EventWatch:Debug(format("GetUnitRank: '%s' rank found '%s'", unitID, index))
 			return index
 		end
 	end
+
+	EventWatch:Debug(format("GetUnitRank: '%s' found no rank", unitID))
 	return I.ranks["None"]
 end
 
@@ -50,10 +59,12 @@ function I:UpdateRank(nameOrUnitID)
 		I:SetRank(name, newRank)
 	end
 
+	EventWatch:Debug(format("UpdateRank: '%s' - newRank: '%s' oldRank: '%s'", name, newRank, oldRank))
 	return newRank, oldRank
 end
 
 function I:ScanRanks()
+	EventWatch:Debug("Scanning for ranks")
 	local g,n = EventWatch:GetGroup()
 	
 	-- Update self
@@ -71,6 +82,7 @@ end
 
 function I:Cleanup()
 	for name,d in pairs(I.players) do
+		EventWatch:Debug("Cleanup: Checking "..name)
 		local inGroup = false
 		if UnitInRaid("PLAYER") then
 			inGroup = UnitInRaid(name)
@@ -78,6 +90,7 @@ function I:Cleanup()
 			inGroup = UnitInParty(name)
 		end
 		if inGroup == false then
+			EventWatch:Debug(format("Cleanup: Removing '%s' as not in group", name))
 			I.players[name] = nil -- Remove non existing players
 		end
 	end
@@ -96,12 +109,7 @@ function I:IncrementWave()
 end
 
 function I:CheckStatus(event, eventMsg, eventType)
-	if ViragDevTool_AddData then
-		ViragDevTool_AddData({eventMsg, eventType}, "CheckStatus")
-	else
-		print("CheckStatus", eventMsg, eventType)
-	end
-
+	EventWatch:Debug(format("CheckStatus: '%s, %s, %s,'", event, eventMsg, eventType))
 	if eventType == "AQ Invasion Controller" then
 		if eventMsg == L["You have successfully ended the invasion."] then
 			I:NewInvasion()
@@ -132,12 +140,15 @@ end
 function I:GetScore(player)
 	if type(player) == "string" then player = I:GetPlayer(player) end
 	local scoreTotal
-	if player.total then
-		scoreTotal = (player.total.damage or 0) + ((player.total.taken or 0)*1.25) + ((player.total.healing or 0)*1.5)
+	if player.rank ~= I.ranks["Major"] and player.total then
+		scoreTotal = (player.total.damage or 0) + ((player.total.taken or 0)*I.scoresRatio["Taken"]) + ((player.total.healing or 0)*I.scoresRatio["Healing"])
+	else
+		scoreTotal = 160000
 	end
+
 	local scoreCurrent
 	if player.current then
-		scoreCurrent = ((player.rank or 0)*40000) + (player.current.damage or 0) + ((player.current.taken or 0)*1.25) + ((player.current.healing or 0)*1.5)
+		scoreCurrent = ((player.rank or 0)*40000) + (player.current.damage or 0) + ((player.current.taken or 0)*I.scoresRatio["Taken"]) + ((player.current.healing or 0)*I.scoresRatio["Healing"])
 	end
 	if scoreTotal and scoreCurrent then
 		return math.min(scoreTotal,scoreCurrent)

@@ -78,7 +78,9 @@ function I:WhoNotMajor()
 	EventWatch:BroadcastMessage("["..L["Invasion"].."] "..list)
 end
 
-function I:UNIT_AURA(_, unitID)
+--function I:UNIT_AURA(_, unitID)
+function I:UNITAURA(unitID)
+	EventWatch:Debug(format("UNITAURA: '%s'", unitID))
 	if EventWatchInvasionSavedData.RankWatchEnabled == false then return end
 	if unitID then
 		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) and (UnitInParty(unitID) or UnitInRaid(unitID)) then
@@ -96,8 +98,8 @@ function I:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 	local _,subEvent,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,arg1,arg2,_,arg4,arg5 = ...
 	if subEvent == "SPELL_AURA_APPLIED" then -- or subEvent == "SPELL_AURA_REFRESH"
 		if I.ranks[arg2] then
-			I:SetRank(destName,arg2)
-			I:ScanRanks()
+			EventWatch:Debug("SPELL_AURA_APPLIED: Is rank", I.ranks[arg2])
+			I:UNITAURA(destName)
 			I.isInvasion = true
 		end
 	else
@@ -131,7 +133,7 @@ end
 
 function I:PLAYER_ENTERING_WORLD()
 	I:CheckState()
-	I:RegisterEvent("UNIT_AURA")
+	--I:RegisterEvent("UNIT_AURA")
 	I:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
 	I:RegisterEvent("PARTY_MEMBERS_CHANGED","CheckState")
 	I:RegisterEvent("PARTY_CONVERTED_TO_RAID")

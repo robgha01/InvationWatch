@@ -10,12 +10,18 @@ EventWatchInvasionSavedData = {
 }
 
 --- Constants
---I.ranksBySpellID = {
---	[985060] = "Private",
---	[2] = "Lieutenant",
---	[3] = "Captain",
---	[4] = "Major",
---}
+I.scoresRatio = {
+	["Damage"] = 1.0,
+	["Taken"] = 1.25,
+	["Healing"] = 1.5
+}
+
+I.scoresByRank = {
+	["Privat"] = 40000,
+	["Lieutenant"] = 80000,
+	["Captain"] = 120000,
+	["Major"] = 160000,
+}
 
 I.rankIcons = {
 	["Privat"] = "Interface/Icons/achievement-pvp-h-09",
