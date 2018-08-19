@@ -86,7 +86,7 @@ function I:UNITAURA(unitID)
 		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) and (UnitInParty(unitID) or UnitInRaid(unitID)) then
 			local name = UnitName(unitID)
 			local newRank, oldRank = I:UpdateRank(name)
-			if oldRank == 2 and newRank == 3 then
+			if oldRank == I.ranks["Captain"] and newRank == I.ranks["Major"] then
 				local msg = format(L["%s is now Major!"], name)
 				EventWatch:BroadcastMessage("["..L["Invasion"].."] "..msg)			
 			end

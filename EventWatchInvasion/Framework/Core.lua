@@ -30,7 +30,6 @@ function I:SetRank(name, rank)
 		EventWatch:Debug(format("SetRank: '%s, %s' - rank updated", name, rank))
 		return true
 	end
-
 	EventWatch:Debug(format("SetRank: '%s, %s' - not updating rank", name, rank))
 	return false
 end
@@ -142,6 +141,15 @@ function I:GetScore(player)
 	local scoreTotal
 	if player.rank ~= I.ranks["Major"] and player.total then
 		scoreTotal = (player.total.damage or 0) + ((player.total.taken or 0)*I.scoresRatio["Taken"]) + ((player.total.healing or 0)*I.scoresRatio["Healing"])
+		if player.rank ~= I.ranks["None"] then
+			-- Check score and update it to minimum if its lower then what its supposed to have
+			local minScore = I.scoresByRank[I.ranksByID[player.rank]]
+			EventWatch:Debug(format("GetScore: checking minimum score '%s, %s'", tostring(minScore), tostring(scoreTotal)))
+			if minScore < scoreTotal then
+				EventWatch:Debug(format("GetScore: seting min score to '%s'", tostring(minScore)))
+				player.total.damage = minScore
+			end
+		end
 	else
 		scoreTotal = 160000
 	end
