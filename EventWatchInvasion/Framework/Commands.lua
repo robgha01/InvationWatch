@@ -45,6 +45,7 @@ function I:RegisterChatCmd()
 	-- Add base commands
 	I:AddCommand("debug", function()
 		EventWatch._debug = not EventWatch._debug
+		chat(format("Debug %s", (EventWatch._debug and "enabled" or "disabled")))
 	end)
 	I:AddCommand("toggle", function()
 		EventWatchInvasionSavedData.RankWatchEnabled = not EventWatchInvasionSavedData.RankWatchEnabled

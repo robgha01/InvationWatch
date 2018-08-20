@@ -144,7 +144,7 @@ function I:GetScore(player)
 		if player.rank ~= I.ranks["None"] then
 			-- Check score and update it to minimum if its lower then what its supposed to have
 			local minScore = I.scoresByRank[I.ranksByID[player.rank]]
-			EventWatch:Debug(format("GetScore: checking minimum score '%s, %s'", tostring(minScore), tostring(scoreTotal)))
+			--EventWatch:Debug(format("GetScore: checking minimum score '%s, %s'", tostring(minScore), tostring(scoreTotal)))
 			if minScore < scoreTotal then
 				EventWatch:Debug(format("GetScore: seting min score to '%s'", tostring(minScore)))
 				player.total.damage = minScore

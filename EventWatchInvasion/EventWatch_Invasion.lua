@@ -88,7 +88,18 @@ function I:UNITAURA(unitID)
 			local newRank, oldRank = I:UpdateRank(name)
 			if oldRank == I.ranks["Captain"] and newRank == I.ranks["Major"] then
 				local msg = format(L["%s is now Major!"], name)
-				EventWatch:BroadcastMessage("["..L["Invasion"].."] "..msg)			
+				EventWatch:BroadcastMessage("["..L["Invasion"].."] "..msg)
+
+				local allMajor = true
+				for name,player in pairs(I.players) do
+					if player.rank ~= I.ranks["Major"] then
+						allMajor = false
+					end
+				end
+
+				if allMajor then
+					I:WhoNotMajor()
+				end
 			end
 		end
 	end
@@ -97,6 +108,7 @@ end
 function I:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 	local _,subEvent,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,arg1,arg2,_,arg4,arg5 = ...
 	if subEvent == "SPELL_AURA_APPLIED" then -- or subEvent == "SPELL_AURA_REFRESH"
+		EventWatch:Debug(format("SPELL_AURA_APPLIED: '%s, %s'", tostring(arg2), tostring(I.ranks[arg2])))
 		if I.ranks[arg2] then
 			EventWatch:Debug("SPELL_AURA_APPLIED: Is rank", I.ranks[arg2])
 			I:UNITAURA(destName)
