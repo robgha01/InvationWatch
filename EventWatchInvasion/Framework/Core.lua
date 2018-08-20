@@ -118,6 +118,16 @@ function I:CheckStatus(event, eventMsg, eventType)
 	end
 end
 
+function I:CanScore(name)
+	local player = I:GetPlayer(name)
+	if player.rank == I.ranks["Major"] then
+		return false
+	elseif player.rank ~= I.ranks["None"] then
+		return UnitAura(unitID, I.ranksByID[player.rank])
+	end
+	return I.isInvasion
+end
+
 function I:AddStat(name,stat,value)
 	local player = I:GetPlayer(name);
 	if player.rank ~= I.ranks["Major"] then
@@ -129,7 +139,7 @@ function I:AddStat(name,stat,value)
 		elseif stat == 2 then -- damage taken
 			player.total.taken = (player.total.taken or 0) + value
 			player.current.taken = (player.current.taken or 0) + value
-		elseif stat == 3 then -- healing
+		elseif stat == 3 and I:CanScore(name) then -- healing
 			player.total.healing = (player.total.healing or 0) + value
 			player.current.healing = (player.current.healing or 0) + value
 		end

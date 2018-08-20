@@ -39,6 +39,11 @@ I.ranksByID = {
 }
 I.ranks = {}
 
+I.reportType = {
+	["Percentage"] = 1,
+	["RankName"] = 2
+}
+
 I.mobs = {
 	-- Wave 1
 	["Silithid Borer"] = 1,

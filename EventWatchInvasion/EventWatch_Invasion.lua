@@ -42,7 +42,7 @@ function I:CheckRank(unit)
 	end
 end
 
-function I:WhoNotMajor()
+function I:WhoNotMajor(reportType)
 	I:ScanRanks()
 	if I.players == nil then return end	
 	local list = ""
@@ -59,10 +59,14 @@ function I:WhoNotMajor()
 
 				if newRank == I.ranks["None"] then
 					list = format(msgNoRank, name, list)
-				elseif score and (score < 160000) and score >= 0 then
-					list = format(msgWithProg, name, math.floor((score/160000)*100), list)				
+				elseif reportType and reportType == I.reportType["RankName"] then
+					list = format(msgWithRank, name, I.ranks[newRank], list)
 				else
-					list = format(msgWithRank, name, I.Ranks[newRank], list)
+					if score and (score < 160000) and score >= 0 then
+						list = format(msgWithProg, name, math.floor((score/160000)*100), list)				
+					else
+						list = format(msgWithRank, name, I.ranks[newRank], list)
+					end
 				end
 			end
 		end
