@@ -123,7 +123,7 @@ function I:CanScore(name)
 	if player.rank == I.ranks["Major"] then
 		return false
 	elseif player.rank ~= I.ranks["None"] then
-		return UnitAura(unitID, I.ranksByID[player.rank])
+		return UnitAura(name, I.ranksByID[player.rank])
 	end
 	return I.isInvasion
 end
