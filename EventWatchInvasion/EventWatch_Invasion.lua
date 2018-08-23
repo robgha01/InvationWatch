@@ -60,12 +60,13 @@ function I:WhoNotMajor(reportType)
 				if newRank == I.ranks["None"] then
 					list = format(msgNoRank, name, list)
 				elseif reportType and reportType == I.reportType["RankName"] then
-					list = format(msgWithRank, name, I.ranks[newRank], list)
+					EventWatch:Debug(format("WhoNotMajor(%s) - %s %s %s", reportType, name, newRank, I.ranksByID[newRank]))
+					list = format(msgWithRank, name, I.ranksByID[newRank], list)
 				else
 					if score and (score < 160000) and score >= 0 then
 						list = format(msgWithProg, name, math.floor((score/160000)*100), list)				
 					else
-						list = format(msgWithRank, name, I.ranks[newRank], list)
+						list = format(msgWithRank, name, I.ranksByID[newRank], list)
 					end
 				end
 			end
@@ -84,7 +85,7 @@ end
 
 --function I:UNIT_AURA(_, unitID)
 function I:UNITAURA(unitID)
-	EventWatch:Debug(format("UNITAURA: '%s'", unitID))
+	--EventWatch:Debug(format("UNITAURA: '%s'", unitID))
 	if EventWatchInvasionSavedData.RankWatchEnabled == false then return end
 	if unitID then
 		if UnitIsPlayer(unitID) and UnitIsConnected(unitID) and (UnitInParty(unitID) or UnitInRaid(unitID)) then
@@ -112,7 +113,7 @@ end
 function I:COMBAT_LOG_EVENT_UNFILTERED(_, ...)
 	local _,subEvent,sourceGUID,sourceName,sourceFlags,destGUID,destName,destFlags,arg1,arg2,_,arg4,arg5 = ...
 	if subEvent == "SPELL_AURA_APPLIED" then -- or subEvent == "SPELL_AURA_REFRESH"
-		EventWatch:Debug(format("SPELL_AURA_APPLIED: '%s, %s'", tostring(arg2), tostring(I.ranks[arg2])))
+		--EventWatch:Debug(format("SPELL_AURA_APPLIED: '%s, %s'", tostring(arg2), tostring(I.ranks[arg2])))
 		if I.ranks[arg2] then
 			EventWatch:Debug("SPELL_AURA_APPLIED: Is rank", I.ranks[arg2])
 			I:UNITAURA(destName)

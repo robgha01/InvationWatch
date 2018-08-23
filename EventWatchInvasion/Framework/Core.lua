@@ -13,7 +13,7 @@ function I:GetPlayer(name)
 	if not I.players[name] then
 		EventWatch:Debug(format("GetPlayer: '%s' - creating a new datastore", name))
 		I.players[name] = {
-			rank = I.ranks["None"],
+			rank = 0,
 			total = { damage = 0, taken = 0, healing = 0 },
 			current = { damage = 0, taken = 0, healing = 0 },
 		}
@@ -44,7 +44,7 @@ function I:GetUnitRank(unitID)
 		end
 	end
 
-	EventWatch:Debug(format("GetUnitRank: '%s' found no rank", unitID))
+	EventWatch:Debug(format("GetUnitRank: '%s' found no rank returning '%s'", unitID, I.ranks["None"]))
 	return I.ranks["None"]
 end
 
@@ -56,6 +56,10 @@ function I:UpdateRank(nameOrUnitID)
 
 	if newRank ~= I.ranks["None"] then
 		I:SetRank(name, newRank)
+	end
+
+	if oldRank == nil then
+		oldRank = I.ranks["None"]
 	end
 
 	EventWatch:Debug(format("UpdateRank: '%s' - newRank: '%s' oldRank: '%s'", name, newRank, oldRank))
